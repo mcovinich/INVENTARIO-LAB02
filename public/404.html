@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inventario LAB 02</title>
+    <script>
+      // GitHub Pages SPA fallback: redirect to root so the app boots from index.html
+      var repo = '/INVENTARIO-LAB02/';
+      var path = window.location.pathname;
+      if (path.indexOf(repo) === 0) {
+        var rest = path.slice(repo.length);
+        var target = repo + '#/' + rest + window.location.search + window.location.hash;
+        window.location.replace(target);
+      } else {
+        window.location.replace(repo);
+      }
+    </script>
+  </head>
+  <body></body>
+</html>
