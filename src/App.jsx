@@ -350,22 +350,34 @@ export default function App() {
   const [expandedItem, setExpandedItem] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const hasQuery = search.trim() !== "" || selectedCat !== "all";
+  const searching = search.trim() !== "";
+  const hasQuery = searching || selectedCat !== "all";
+
+  const matchesSearch = (d) => {
+    if (!searching) return true;
+    const q = normalize(search.trim());
+    return (
+      normalize(d.nom).includes(q) ||
+      normalize(d.cod).includes(q) ||
+      normalize(d.form).includes(q)
+    );
+  };
 
   const filtered = useMemo(() => {
     if (!hasQuery) return [];
     let items = DATA;
     if (selectedCat !== "all") items = items.filter(d => d.cat === selectedCat);
-    if (search.trim()) {
-      const q = normalize(search.trim());
-      items = items.filter(d =>
-        normalize(d.nom).includes(q) ||
-        normalize(d.cod).includes(q) ||
-        normalize(d.form).includes(q)
-      );
-    }
+    if (searching) items = items.filter(matchesSearch);
     return items;
-  }, [search, selectedCat, hasQuery]);
+  }, [search, selectedCat, hasQuery, searching]);
+
+  const globalMatches = useMemo(() => {
+    if (!searching || selectedCat === "all") return 0;
+    return DATA.filter(matchesSearch).length;
+  }, [search, selectedCat, searching]);
+
+  const showExpandOffer = searching && selectedCat !== "all" && filtered.length === 0 && globalMatches > 0;
+  const currentCatName = CATEGORIES.find(c => c.code === selectedCat)?.name || "";
 
   const currentCatLabel = selectedCat === "all"
     ? "Todas las categorías"
@@ -511,11 +523,33 @@ export default function App() {
               <div style={{ fontSize: 13, marginTop: 4 }}>o elegí una categoría del menú</div>
             </div>
           )}
-          {hasQuery && filtered.length === 0 && (
+          {hasQuery && filtered.length === 0 && !showExpandOffer && (
             <div style={{ textAlign: "center", padding: "48px 20px", color: "#8aaa9e" }}>
               <div style={{ fontSize: 40, marginBottom: 10 }}>🔬</div>
               <div style={{ fontSize: 15, fontWeight: 500 }}>No se encontraron reactivos</div>
               <div style={{ fontSize: 13, marginTop: 4 }}>Probá con otro término de búsqueda</div>
+            </div>
+          )}
+          {showExpandOffer && (
+            <div style={{ textAlign: "center", padding: "40px 20px 20px", color: "#8aaa9e" }}>
+              <div style={{ fontSize: 40, marginBottom: 10 }}>🔬</div>
+              <div style={{ fontSize: 15, fontWeight: 500, color: "#5a7a70" }}>
+                No se encontró en {currentCatName}
+              </div>
+              <div style={{ fontSize: 13, marginTop: 4 }}>
+                Pero hay {globalMatches} resultado{globalMatches !== 1 ? "s" : ""} en otras categorías
+              </div>
+              <button
+                onClick={() => setSelectedCat("all")}
+                style={{
+                  marginTop: 16, padding: "10px 18px", borderRadius: 10,
+                  border: "none", background: "#2d6b57", color: "white",
+                  fontSize: 14, fontWeight: 600, cursor: "pointer",
+                  boxShadow: "0 2px 6px rgba(45,107,87,0.3)",
+                }}
+              >
+                Buscar en todas las categorías
+              </button>
             </div>
           )}
           {filtered.map((d, i) => {
