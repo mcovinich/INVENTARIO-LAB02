@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 
 const DATA = [
   {cat:"Fe",catName:"Sales de Hierro",cod:"Fe 001",nom:"Fosfato ferroso",form:"Fe₃(PO₄)₂",marca:"nn",cant:"1000 g",frasc:1},
@@ -349,6 +349,17 @@ export default function App() {
   const [selectedCat, setSelectedCat] = useState("all");
   const [expandedItem, setExpandedItem] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const searchInputRef = useRef(null);
+
+  useEffect(() => {
+    const dismissKeyboard = () => {
+      if (document.activeElement === searchInputRef.current) {
+        searchInputRef.current?.blur();
+      }
+    };
+    window.addEventListener("scroll", dismissKeyboard, { passive: true });
+    return () => window.removeEventListener("scroll", dismissKeyboard);
+  }, []);
 
   const searching = search.trim() !== "";
   const hasQuery = searching || selectedCat !== "all";
@@ -408,9 +419,19 @@ export default function App() {
           </h1>
 
           {/* Search */}
-          <div style={{ position: "relative", marginBottom: 10 }}>
+          <form
+            onSubmit={e => { e.preventDefault(); searchInputRef.current?.blur(); }}
+            style={{ position: "relative", marginBottom: 10 }}
+          >
             <input
-              type="text"
+              ref={searchInputRef}
+              type="search"
+              inputMode="search"
+              enterKeyHint="search"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck={false}
               placeholder="Buscar por nombre, código o fórmula..."
               value={search}
               onChange={e => setSearch(e.target.value)}
@@ -419,6 +440,7 @@ export default function App() {
                 border: "none", fontSize: 15, background: "rgba(255,255,255,0.95)",
                 color: "#1a2e2a", outline: "none", boxSizing: "border-box",
                 boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                WebkitAppearance: "none", appearance: "none",
               }}
             />
             <span style={{
@@ -426,14 +448,18 @@ export default function App() {
               fontSize: 18, opacity: 0.4, pointerEvents: "none",
             }}>🔍</span>
             {search && (
-              <button onClick={() => setSearch("")} style={{
-                position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)",
-                background: "#ddd", border: "none", borderRadius: "50%",
-                width: 22, height: 22, cursor: "pointer", fontSize: 12, color: "#666",
-                display: "flex", alignItems: "center", justifyContent: "center",
-              }}>✕</button>
+              <button
+                type="button"
+                onClick={() => { setSearch(""); searchInputRef.current?.blur(); }}
+                style={{
+                  position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)",
+                  background: "#ddd", border: "none", borderRadius: "50%",
+                  width: 22, height: 22, cursor: "pointer", fontSize: 12, color: "#666",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}
+              >✕</button>
             )}
-          </div>
+          </form>
 
           {/* Dropdown categoría */}
           <div style={{ position: "relative" }}>
