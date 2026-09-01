@@ -230,15 +230,15 @@ const DATA = [
   {cat:"AS",catName:"Ácidos Sólidos",cod:"AS 025",nom:"Fenilalanina",form:"",marca:"Socram",cant:"100 g",frasc:1},
   {cat:"AN",catName:"Anhídridos",cod:"AN 001",nom:"Anhídrido acético",form:"",marca:"Berna, Sintorgan, Mallinckrodt, nn",cant:"3500 mL",frasc:9},
   {cat:"AN",catName:"Anhídridos",cod:"AN 002",nom:"Anhídrido ftálico",form:"C₆H₄(CO)₂O",marca:"Berna, Timper, Anedra, nn",cant:"1300 mL",frasc:7},
-  {cat:"N",catName:"Aminas y Nitrogenados",cod:"N 001",nom:"Hexametilenamina",form:"C₆H₁₃N",marca:"Fluka",cant:"1000 mL",frasc:1},
-  {cat:"N",catName:"Aminas y Nitrogenados",cod:"N 002",nom:"L-lisina monoclorohidrato",form:"",marca:"BDH, Anedra",cant:"50 g",frasc:1},
-  {cat:"N",catName:"Aminas y Nitrogenados",cod:"N 003",nom:"Nitrobenceno",form:"C₆H₅NO₂",marca:"Sintorgan",cant:"1000 mL",frasc:1},
-  {cat:"N",catName:"Aminas y Nitrogenados",cod:"N 005",nom:"Urea",form:"",marca:"nn, Fluka, Stanton",cant:"1000 mL / 750 g",frasc:6},
-  {cat:"N",catName:"Aminas y Nitrogenados",cod:"N 006",nom:"4-((p-nitrofenil)azo)resorcinol",form:"",marca:"Fluka",cant:"25 g",frasc:2},
-  {cat:"N",catName:"Aminas y Nitrogenados",cod:"N 007",nom:"Amoníaco",form:"",marca:"nn",cant:"200 mL",frasc:1},
-  {cat:"N",catName:"Aminas y Nitrogenados",cod:"N 008",nom:"Nitrato de plata",form:"AgNO₃",marca:"nn",cant:"25 g",frasc:2},
-  {cat:"N",catName:"Aminas y Nitrogenados",cod:"N 009",nom:"Acetanilida",form:"C₆H₅NHCOCH₃",marca:"LBN, Mallinckrodt",cant:"300 g",frasc:1},
-  {cat:"N",catName:"Aminas y Nitrogenados",cod:"N 010",nom:"2,4-dinitrofenil hidrazina",form:"",marca:"nn, RP, AnalaR",cant:"105 g",frasc:3},
+  {cat:"N",catName:"Aminas y Otros Compuestos con Nitrógeno",cod:"N 001",nom:"Hexametilenamina",form:"C₆H₁₃N",marca:"Fluka",cant:"1000 mL",frasc:1},
+  {cat:"N",catName:"Aminas y Otros Compuestos con Nitrógeno",cod:"N 002",nom:"L-lisina monoclorohidrato",form:"",marca:"BDH, Anedra",cant:"50 g",frasc:1},
+  {cat:"N",catName:"Aminas y Otros Compuestos con Nitrógeno",cod:"N 003",nom:"Nitrobenceno",form:"C₆H₅NO₂",marca:"Sintorgan",cant:"1000 mL",frasc:1},
+  {cat:"N",catName:"Aminas y Otros Compuestos con Nitrógeno",cod:"N 005",nom:"Urea",form:"",marca:"nn, Fluka, Stanton",cant:"1000 mL / 750 g",frasc:6},
+  {cat:"N",catName:"Aminas y Otros Compuestos con Nitrógeno",cod:"N 006",nom:"4-((p-nitrofenil)azo)resorcinol",form:"",marca:"Fluka",cant:"25 g",frasc:2},
+  {cat:"N",catName:"Aminas y Otros Compuestos con Nitrógeno",cod:"N 007",nom:"Amoníaco",form:"",marca:"nn",cant:"200 mL",frasc:1},
+  {cat:"N",catName:"Aminas y Otros Compuestos con Nitrógeno",cod:"N 008",nom:"Nitrato de plata",form:"AgNO₃",marca:"nn",cant:"25 g",frasc:2},
+  {cat:"N",catName:"Aminas y Otros Compuestos con Nitrógeno",cod:"N 009",nom:"Acetanilida",form:"C₆H₅NHCOCH₃",marca:"LBN, Mallinckrodt",cant:"300 g",frasc:1},
+  {cat:"N",catName:"Aminas y Otros Compuestos con Nitrógeno",cod:"N 010",nom:"2,4-dinitrofenil hidrazina",form:"",marca:"nn, RP, AnalaR",cant:"105 g",frasc:3},
   {cat:"HC",catName:"Hidrocarburos",cod:"HC 001",nom:"Antraceno",form:"C₁₄H₁₀",marca:"Merck",cant:"200 g",frasc:1},
   {cat:"HC",catName:"Hidrocarburos",cod:"HC 002",nom:"Benceno",form:"C₆H₆",marca:"Anedra",cant:"2400 mL",frasc:4},
   {cat:"HC",catName:"Hidrocarburos",cod:"HC 003",nom:"Ciclohexano",form:"C₆H₁₂",marca:"BDH, Carlo Erba",cant:"1700 mL",frasc:4},
@@ -350,7 +350,10 @@ export default function App() {
   const [expandedItem, setExpandedItem] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
+  const hasQuery = search.trim() !== "" || selectedCat !== "all";
+
   const filtered = useMemo(() => {
+    if (!hasQuery) return [];
     let items = DATA;
     if (selectedCat !== "all") items = items.filter(d => d.cat === selectedCat);
     if (search.trim()) {
@@ -358,12 +361,11 @@ export default function App() {
       items = items.filter(d =>
         normalize(d.nom).includes(q) ||
         normalize(d.cod).includes(q) ||
-        normalize(d.form).includes(q) ||
-        normalize(d.marca).includes(q)
+        normalize(d.form).includes(q)
       );
     }
     return items;
-  }, [search, selectedCat]);
+  }, [search, selectedCat, hasQuery]);
 
   const currentCatLabel = selectedCat === "all"
     ? "Todas las categorías"
@@ -397,7 +399,7 @@ export default function App() {
           <div style={{ position: "relative", marginBottom: 10 }}>
             <input
               type="text"
-              placeholder="Buscar por nombre, código, fórmula o marca..."
+              placeholder="Buscar por nombre, código o fórmula..."
               value={search}
               onChange={e => setSearch(e.target.value)}
               style={{
@@ -492,16 +494,24 @@ export default function App() {
       </div>
 
       <div style={{ maxWidth: 600, margin: "0 auto", padding: "0 12px" }}>
-        {/* Results count */}
-        <div style={{
-          padding: "12px 4px 8px", fontSize: 13, color: "#5a7a70", fontWeight: 500,
-        }}>
-          {filtered.length} reactivo{filtered.length !== 1 ? "s" : ""} encontrado{filtered.length !== 1 ? "s" : ""}
-        </div>
+        {hasQuery && (
+          <div style={{
+            padding: "12px 4px 8px", fontSize: 13, color: "#5a7a70", fontWeight: 500,
+          }}>
+            {filtered.length} reactivo{filtered.length !== 1 ? "s" : ""} encontrado{filtered.length !== 1 ? "s" : ""}
+          </div>
+        )}
 
         {/* Results */}
         <div style={{ display: "flex", flexDirection: "column", gap: 6, paddingBottom: 80 }}>
-          {filtered.length === 0 && (
+          {!hasQuery && (
+            <div style={{ textAlign: "center", padding: "48px 20px", color: "#8aaa9e" }}>
+              <div style={{ fontSize: 40, marginBottom: 10 }}>🧪</div>
+              <div style={{ fontSize: 15, fontWeight: 500 }}>Escribí para buscar</div>
+              <div style={{ fontSize: 13, marginTop: 4 }}>o elegí una categoría del menú</div>
+            </div>
+          )}
+          {hasQuery && filtered.length === 0 && (
             <div style={{ textAlign: "center", padding: "48px 20px", color: "#8aaa9e" }}>
               <div style={{ fontSize: 40, marginBottom: 10 }}>🔬</div>
               <div style={{ fontSize: 15, fontWeight: 500 }}>No se encontraron reactivos</div>
