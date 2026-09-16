@@ -319,7 +319,8 @@ const DATA = [
   {cat:"AP",catName:"Aminoácidos y Proteínas",cod:"AP 013",nom:"Fenilalanina",form:"",marca:"Socram",cant:"100 g",frasc:1},
 ];
 
-const CATEGORIES = [...new Map(DATA.map(d => [d.cat, {code: d.cat, name: d.catName}])).values()];
+const CATEGORIES = [...new Map(DATA.map(d => [d.cat, {code: d.cat, name: d.catName}])).values()]
+  .sort((a, b) => a.name.localeCompare(b.name, "es"));
 
 function normalize(str) {
   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -381,7 +382,7 @@ export default function App() {
     let items = DATA;
     if (selectedCat !== "all") items = items.filter(d => d.cat === selectedCat);
     if (searching) items = items.filter(matchesSearch);
-    return items;
+    return [...items].sort((a, b) => a.nom.localeCompare(b.nom, "es"));
   }, [search, selectedCat, hasQuery, searching]);
 
   const globalMatches = useMemo(() => {
