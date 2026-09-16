@@ -365,7 +365,7 @@ export default function App() {
   }, []);
 
   const searching = search.trim() !== "";
-  const hasQuery = searching || selectedCat !== "all";
+  const hasQuery = searching;
 
   const matchesSearch = (d) => {
     if (!searching) return true;
@@ -549,7 +549,7 @@ export default function App() {
             <div style={{ textAlign: "center", padding: "48px 20px", color: "#8aaa9e" }}>
               <div style={{ fontSize: 40, marginBottom: 10 }}>🧪</div>
               <div style={{ fontSize: 15, fontWeight: 500 }}>Escribí para buscar</div>
-              <div style={{ fontSize: 13, marginTop: 4 }}>o elegí una categoría del menú</div>
+              <div style={{ fontSize: 13, marginTop: 4 }}>(opcional) elegí una categoría para acotar</div>
             </div>
           )}
           {hasQuery && filtered.length === 0 && !showExpandOffer && (
