@@ -1,0 +1,26 @@
+{
+  "name": "Inventario LAB 02",
+  "short_name": "LAB 02",
+  "description": "Inventario de reactivos del Laboratorio 02",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1a4a3a",
+  "theme_color": "#1a4a3a",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
